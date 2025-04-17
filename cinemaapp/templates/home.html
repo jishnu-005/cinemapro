@@ -1,0 +1,797 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>MOVIEW - Movie Reviews & Ratings</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Inter font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <!-- Orbitron font for logo -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap">
+    <!-- AOS Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #00BFFF; /* Electric Blue */
+            --primary-dark: #0099CC; /* Darker Electric Blue */
+            --primary-light: #33CCFF; /* Lighter Electric Blue */
+            --secondary: #007BFF; /* Secondary Blue */
+            --secondary-dark: #0056b3; /* Darker Secondary Blue */
+            --dark: #000000; /* Pure Black */
+            --darker: #0a0a0a; /* Slightly Lighter Black */
+            --light: #e2e8f0; /* Light Gray */
+            --gray: #6b7280; 
+            --light-gray: #4b5563;
+            --card-bg: rgba(10, 10, 10, 0.7); /* Dark Card Background */
+            --glass-border: rgba(0, 191, 255, 0.2); /* Electric Blue Border */
+            --glass-highlight: rgba(0, 191, 255, 0.05); /* Electric Blue Highlight */
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(at 100% 0%, rgba(0, 191, 255, 0.3) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(0, 123, 255, 0.2) 0px, transparent 50%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-dark);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Header */
+        header {
+            background-image: url('/static/images/dark_header_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        header .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 5px var(--primary); }
+            50% { opacity: 1; box-shadow: 0 0 15px var(--primary-light); }
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 9px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-light);
+        }
+
+        .nav-menu a:hover::after {
+            width: 80%;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .hamburger-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid transparent;
+        }
+
+        .hamburger-btn:hover {
+            border: 1px solid var(--glass-border);
+            background: var(--glass-highlight);
+        }
+
+        .hamburger-icon {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 18px;
+            width: 24px;
+        }
+
+        .hamburger-icon span {
+            height: 2px;
+            width: 100%;
+            background-color: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown.active .hamburger-icon span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .dropdown.active .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .dropdown.active .hamburger-icon span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .dropdown-content {
+            visibility: hidden;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--card-bg);
+            min-width: 200px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+
+        .dropdown.active .dropdown-content {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--card-bg);
+            transform: rotate(45deg);
+            border-left: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Responsive dropdown fixes */
+        @media (max-width: 767.98px) {
+            .dropdown-content {
+                right: 0;
+                width: auto;
+                min-width: 180px;
+            }
+            
+            .dropdown-content::before {
+                right: 20px;
+            }
+        }
+
+        .dropdown-content a {
+            color: var(--light);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background: linear-gradient(90deg, rgba(0, 191, 255, 0.1), rgba(0, 123, 255, 0.1));
+            color: var(--primary-light);
+            padding-left: 20px;
+        }
+
+        .dropdown-content a i {
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-content a:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('/static/images/cinema_bg.jpg') center/cover no-repeat;
+            position: relative;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-weight: 700;
+            line-height: 1.2;
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+        }
+
+        /* Floating element animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .cta-container {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--secondary-dark), var(--secondary));
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3);
+            padding: 12px 28px;
+            width: auto;
+            max-width: 200px;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(45deg, var(--secondary), var(--primary-dark));
+            transition: all 0.5s ease;
+            z-index: -1;
+            border-radius: 25px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 191, 255, 0.4);
+        }
+
+        .cta-button:hover::before {
+            width: 100%;
+        }
+
+        /* Pulse animation for CTA */
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 25px;
+            box-shadow: 0 0 0 0 rgba(0, 191, 255, 0.7);
+            animation: pulse 2s infinite;
+            z-index: -2;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 191, 255, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(0, 191, 255, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 191, 255, 0);
+            }
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            position: relative;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(at 0% 100%, rgba(0, 191, 255, 0.2) 0px, transparent 40%),
+                radial-gradient(at 100% 0%, rgba(0, 123, 255, 0.2) 0px, transparent 40%);
+            pointer-events: none;
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .footer-desc {
+            color: var(--gray);
+            font-size: 1.05rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 9;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-dark), var(--secondary-dark));
+            transition: all 0.4s ease;
+            z-index: -1;
+            transform: rotate(45deg);
+            transform-origin: 0 0;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px) rotate(360deg);
+            box-shadow: 0 10px 20px rgba(0, 191, 255, 0.2);
+            border-color: transparent;
+        }
+
+        .social-link:hover::before {
+            width: 200%;
+        }
+
+        .social-link i {
+            color: white;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 575.98px) {
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .footer-logo {
+                font-size: 1.6rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem !important;
+            }
+            
+            .hero .lead {
+                font-size: 1rem !important;
+            }
+
+            .cta-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .social-links {
+                gap: 0.75rem;
+            }
+            
+            .social-link {
+                width: 38px;
+                height: 38px;
+            }
+            
+            .footer-desc {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (min-width: 576px) and (max-width: 767.98px) {
+            .logo {
+                font-size: 1.6rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem !important;
+            }
+            
+            .hero .lead {
+                font-size: 1.1rem !important;
+            }
+            
+            .hero-content {
+                min-height: 400px !important;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .hero-content {
+                min-height: 450px !important;
+            }
+            
+            .hero h1 {
+                font-size: 2.6rem !important;
+            }
+        }
+
+        /* Animated elements */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Illuminated effect for elements */
+        .illuminate {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .illuminate::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.05) 50%, 
+                rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            animation: illuminateEffect 5s infinite;
+        }
+
+        @keyframes illuminateEffect {
+            0% { 
+                left: -100%; 
+                top: -100%;
+            }
+            100% { 
+                left: 100%; 
+                top: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="py-2 py-md-3" data-aos="fade-down" data-aos-duration="800">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-6 col-md-4">
+                    <div class="logo">MOVIEW</div>
+                </div>
+                <div class="col-6 col-md-8">
+                    <nav class="nav-menu d-flex justify-content-end">
+                        <div class="dropdown">
+                            <a href="#" class="hamburger-btn">
+                                <div class="hamburger-icon">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </a>
+                            <div class="dropdown-content">
+                                <a href="/list_user_reviews/"><i class="fas fa-star me-2"></i>My Ratings</a>
+                                <a href="/profile/"><i class="fas fa-user-circle me-2"></i>Profile</a>
+                                <a href="/logout/"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero py-4 py-md-5 py-lg-0">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="hero-content py-4 py-md-5 py-lg-0" style="min-height: 500px; display: flex; flex-direction: column; justify-content: center;">
+                        <h1 class="display-4 mb-3 mb-md-4" data-aos="fade-up" data-aos-duration="1000">
+                            Discover Your Next Favorite Film
+                        </h1>
+                        <p class="lead mb-3 mb-md-4 px-2 px-md-0" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+                            Expertly curated reviews, ratings, and recommendations for the latest movies. Your ultimate guide to what's worth watching.
+                        </p>
+                        <div class="d-flex justify-content-center cta-container mt-2 mt-md-3" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
+                            <a href="/user_list_movies/" class="cta-button illuminate">Explore Trending</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer id="contact" class="pt-4 pt-md-5 pb-3">
+        <div class="container">
+            <div class="row justify-content-center text-center mb-4 mb-md-5">
+                <div class="col-12 col-md-10 col-lg-6" data-aos="fade-up" data-aos-duration="800">
+                    <div class="footer-logo mb-3">MOVIEW</div>
+                    <p class="footer-desc mb-4 px-3 px-md-0">Your trusted source for honest film criticism, thoughtful analysis, and personalized recommendations.</p>
+                    <div class="social-links mb-4">
+                        <a href="#" class="social-link" data-aos="fade-up" data-aos-delay="100"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" data-aos="fade-up" data-aos-delay="200"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link" data-aos="fade-up" data-aos-delay="300"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" data-aos="fade-up" data-aos-delay="400"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright text-center pt-3 pt-md-4 border-top border-dark" data-aos="fade-up" data-aos-duration="800">
+                <p class="mb-0">&copy; 2025 MOVIEW. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Initialize AOS
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                once: true,
+                duration: 800,
+                disable: 'phone' // Better performance on mobile
+            });
+            
+            // Loading screen
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            
+            // Hide loading overlay after content loads
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(function() {
+                        loadingOverlay.style.visibility = 'hidden';
+                    }, 800);
+                }, 500);
+            });
+            
+            // Improved dropdown functionality with click toggle and outside click handling
+            const hamburgerBtn = document.querySelector('.hamburger-btn');
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownContent = document.querySelector('.dropdown-content');
+        
+            // Toggle dropdown on button click
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+            });
+        
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        
+            // For desktop users: Keep dropdown open when hovering
+            if (window.innerWidth >= 992) {
+                dropdown.addEventListener('mouseenter', function() {
+                    dropdown.classList.add('active');
+                });
+            
+                dropdown.addEventListener('mouseleave', function() {
+                    dropdown.classList.remove('active');
+                });
+            }
+
+            // Check screen size on resize and adjust behavior
+            window.addEventListener('resize', function() {
+                // Disable hover effect on mobile/tablet
+                if (window.innerWidth < 992) {
+                    dropdown.removeEventListener('mouseenter', function() {
+                        dropdown.classList.add('active');
+                    });
+                
+                    dropdown.removeEventListener('mouseleave', function() {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Reactions</title>
+    <style>
+        :root {
+            --black: #121212;
+            --electric-blue: #00FFFF;
+            --dark-blue: #001e3c;
+            --light-gray: #e0e0e0;
+            --medium-gray: #404040;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--black);
+            color: white;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(90deg, var(--black), var(--dark-blue));
+            padding: 20px 0;
+            border-bottom: 3px solid var(--electric-blue);
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--electric-blue);
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .reactions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .reaction-card {
+            background-color: rgba(0, 30, 60, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--medium-gray);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .reaction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .reaction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--electric-blue);
+        }
+        
+        .reaction-type {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .reaction-like {
+            background-color: rgba(0, 255, 255, 0.2);
+            color: var(--electric-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        
+        .reaction-dislike {
+            background-color: rgba(255, 50, 50, 0.2);
+            color: #ff5050;
+            border: 1px solid #ff5050;
+        }
+        
+        .user-info, .review-info {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .label {
+            color: var(--electric-blue);
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .timestamp {
+            color: var(--light-gray);
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--light-gray);
+        }
+        
+        @media (max-width: 768px) {
+            .reactions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+        
+        .search-bar {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .search-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--medium-gray);
+            border-radius: 25px;
+            padding: 10px 20px;
+            width: 100%;
+            max-width: 500px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--electric-blue);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .search-input::placeholder {
+            color: var(--light-gray);
+        }
+        
+        .counter {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+        
+        .highlight {
+            color: var(--electric-blue);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Review Reactions</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search by user or review content...">
+        </div>
+        
+        <div class="counter">
+            Showing <span class="highlight" id="count">{{ reactions|length }}</span> reactions
+        </div>
+        
+        {% if reactions %}
+        <div class="reactions-grid" id="reactionsGrid">
+            {% for reaction in reactions %}
+            <div class="reaction-card">
+                <div class="reaction-type {% if reaction.reaction_type == 'like' %}reaction-like{% else %}reaction-dislike{% endif %}">
+                    {% if reaction.reaction_type == 'like' %}👍 Like{% else %}👎 Dislike{% endif %}
+                </div>
+
+                <div class="user-info">
+                    <span class="label">Movie:</span>
+                    <span>{{ reaction.review.movie.title }}</span>
+                </div>
+                
+                <div class="user-info">
+                    <span class="label">From:</span>
+                    <span>{{ reaction.user.name }}</span>
+                </div>
+                
+                <div class="review-info">
+                    <span class="label">Review by:</span>
+                    <span>{{ reaction.review.user.name }}</span>
+                </div>
+                
+                <div class="review-content">
+                    <span class="label">Review content:</span>
+                    <p>{{ reaction.review.comment|truncatechars:100 }}</p>
+                </div>
+                
+                <div class="timestamp">
+                    {{ reaction.created_at|date:"F j, Y, g:i a" }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No reactions found. Be the first to react to a review!</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const reactionsGrid = document.getElementById('reactionsGrid');
+            const countElement = document.getElementById('count');
+            
+            if (searchInput && reactionsGrid) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const cards = reactionsGrid.querySelectorAll('.reaction-card');
+                    let visibleCount = 0;
+                    
+                    cards.forEach(card => {
+                        const userInfo = card.querySelector('.user-info').textContent.toLowerCase();
+                        const reviewInfo = card.querySelector('.review-info').textContent.toLowerCase();
+                        const reviewContent = card.querySelector('.review-content').textContent.toLowerCase();
+                        
+                        if (userInfo.includes(searchTerm) || reviewInfo.includes(searchTerm) || reviewContent.includes(searchTerm)) {
+                            card.style.display = '';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    if (countElement) {
+                        countElement.textContent = visibleCount;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

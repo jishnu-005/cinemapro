@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reviews</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --black: #121212;
+            --electric-blue: #00FFFF;
+            --dark-blue: #0066CC;
+            --gray: #333333;
+            --light-gray: #444444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--black);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--electric-blue);
+        }
+        
+        h1 {
+            color: var(--electric-blue);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+        }
+        
+        .back-btn {
+            background-color: var(--electric-blue);
+            color: var(--black);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+        
+        .back-btn:hover {
+            background-color: var(--dark-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .review-card {
+            background-color: var(--gray);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 1px solid transparent;
+            height: auto;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--electric-blue);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .review-header {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-bottom: 2px solid var(--electric-blue);
+        }
+        
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: white;
+        }
+        
+        .rating {
+            color: var(--electric-blue);
+            font-weight: bold;
+        }
+        
+        .review-content {
+            padding: 15px;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .comment-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        .comment {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 120px; /* Approximate height for 4 lines */
+        }
+        
+        .view-more {
+            color: var(--electric-blue);
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: none; /* Hidden by default */
+        }
+        
+        .view-more.visible {
+            display: block; /* Show when needed */
+        }
+        
+        .view-more:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .edit-btn {
+            color: var(--electric-blue);
+        }
+        
+        .edit-btn:hover {
+            color: var(--dark-blue);
+            transform: scale(1.2);
+        }
+        
+        .delete-btn {
+            color: #ff3333;
+        }
+        
+        .delete-btn:hover {
+            color: #cc0000;
+            transform: scale(1.2);
+        }
+        
+        .reaction-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--light-gray);
+        }
+        
+        .reaction-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .reaction-count {
+            font-weight: bold;
+            color: white;
+        }
+        
+        .likes-icon {
+            color: #4CAF50;
+        }
+        
+        .dislikes-icon {
+            color: #F44336;
+        }
+        
+        .no-reviews {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 50px;
+            background-color: var(--gray);
+            border-radius: 10px;
+            border: 1px dashed var(--electric-blue);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--gray);
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+            border: 2px solid var(--electric-blue);
+            position: relative;
+        }
+        
+        .close {
+            color: var(--electric-blue);
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: white;
+        }
+        
+        .modal-title {
+            color: var(--electric-blue);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--electric-blue);
+            font-size: clamp(1.25rem, 4vw, 1.75rem);
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+        
+        .modal-footer {
+            text-align: right;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .modal-reactions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        @media (max-width: 992px) {
+            .reviews-container {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .reviews-container {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 15px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .back-btn {
+                align-self: flex-start;
+            }
+            
+            .modal-content {
+                width: 90%;
+                margin: 20% auto;
+            }
+            
+            .review-card {
+                min-height: 300px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .reviews-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+            
+            .review-card {
+                min-height: 280px;
+            }
+            
+            .reaction-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .modal-reactions {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Reviews</h1>
+            <a href="{% url 'home' %}" class="back-btn">Back to Home</a>
+        </header>
+        
+        <div class="reviews-container">
+            {% if review %}
+                {% for r in review %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="movie-title">{{ r.movie.title }}</div>
+                        <div class="rating">⭐ {{ r.rating }}/10</div>
+                    </div>
+                    <div class="review-content">
+                        <div class="comment-container">
+                            <p class="comment" id="comment-{{ r.id }}">{{ r.comment }}</p>
+                        </div>
+                        <div class="view-more" id="view-more-{{ r.id }}" onclick="openModal('{{ r.id }}')">View More</div>
+                        
+                        <!-- Likes and Dislikes Section -->
+                        <div class="reaction-section">
+                            <div class="reaction-item">
+                                <i class="far fa-thumbs-up likes-icon"></i>
+                                <span class="reaction-count">{{ r.reactions.filter|dictsort:"reaction_type"|slice:":1"|length }}</span> likes
+                            </div>
+                            <div class="reaction-item">
+                                <i class="far fa-thumbs-down dislikes-icon"></i>
+                                <span class="reaction-count">{{ r.reactions.filter|dictsort:"reaction_type"|slice:"1:"|length }}</span> dislikes
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-footer">
+                        <span class="date">{{ r.created_at|date:"F d, Y" }}</span>
+                        <div class="action-buttons">
+                            <a href="{% url 'delete_my_review' r.id %}" class="icon-btn delete-btn" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal for this review -->
+                <div id="modal-{{ r.id }}" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('{{ r.id }}')">&times;</span>
+                        <h2 class="modal-title">{{ r.movie.title }} - Review</h2>
+                        <div class="modal-body">
+                            <p>{{ r.comment }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div>Rating: ⭐ {{ r.rating }}/10</div>
+                            <div>{{ r.created_at|date:"F d, Y" }}</div>
+                        </div>
+                        <div class="modal-reactions">
+                            <div class="reaction-item">
+                                <i class="far fa-thumbs-up likes-icon"></i>
+                                <span class="reaction-count">{{ r.reactions.filter|dictsort:"reaction_type"|slice:":1"|length }}</span> likes
+                            </div>
+                            <div class="reaction-item">
+                                <i class="far fa-thumbs-down dislikes-icon"></i>
+                                <span class="reaction-count">{{ r.reactions.filter|dictsort:"reaction_type"|slice:"1:"|length }}</span> dislikes
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-reviews">
+                    <h2>No reviews yet</h2>
+                    <p>You haven't written any reviews yet. Start reviewing movies to see them here!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        // Check if each comment needs a View More button
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if review %}
+                {% for r in review %}
+                    checkCommentLength('{{ r.id }}');
+                {% endfor %}
+            {% endif %}
+        });
+        
+        function checkCommentLength(id) {
+            const comment = document.getElementById('comment-' + id);
+            const viewMoreBtn = document.getElementById('view-more-' + id);
+            
+            // If the content is overflowing (scrollHeight > clientHeight),
+            // or if the text is being truncated by the -webkit-line-clamp
+            if (comment && viewMoreBtn) {
+                // Check if content is overflowing the container
+                if (comment.scrollHeight > comment.clientHeight || 
+                    comment.offsetHeight < comment.scrollHeight) {
+                    viewMoreBtn.classList.add('visible');
+                }
+            }
+        }
+        
+        function openModal(id) {
+            document.getElementById('modal-' + id).style.display = "block";
+            document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+        }
+        
+        function closeModal(id) {
+            document.getElementById('modal-' + id).style.display = "none";
+            document.body.style.overflow = "auto"; // Enable scrolling again
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        }
+        
+        // Make sure to resize properly on window changes
+        window.addEventListener('resize', function() {
+            {% if review %}
+                {% for r in review %}
+                    checkCommentLength('{{ r.id }}');
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
+</body>
+</html>

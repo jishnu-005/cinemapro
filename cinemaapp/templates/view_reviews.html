@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Reviews</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #121212;
+            --electric-blue: #00BFFF;
+            --electric-blue-hover: #1E90FF;
+            --card-bg: #1E1E1E;
+            --text-color: #FFFFFF;
+            --text-secondary: #CCCCCC;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--primary-black);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--electric-blue);
+        }
+        
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--electric-blue);
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        /* Search Bar Styles */
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .search-bar {
+            width: 100%;
+            background-color: rgba(30, 30, 30, 0.8);
+            border: 2px solid var(--electric-blue);
+            border-radius: 50px;
+            padding: 15px 20px 15px 50px;
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.2);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+            border-color: var(--electric-blue-hover);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--electric-blue);
+            font-size: 1.2rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+        
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .review-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            height: 380px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 191, 255, 0.2);
+            border: 1px solid var(--electric-blue);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #000000, #0a4c75);
+            padding: 15px;
+            border-bottom: 2px solid var(--electric-blue);
+        }
+        
+        .movie-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--electric-blue);
+            margin-bottom: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .rating {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .star {
+            color: gold;
+        }
+        
+        .card-body {
+            padding: 15px;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .comment {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .card-footer {
+            padding: 10px 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .view-more {
+            background-color: var(--electric-blue);
+            color: var(--primary-black);
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .view-more:hover {
+            background-color: var(--electric-blue-hover);
+            transform: scale(1.05);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1E1E1E, #0c1824);
+            margin: 10% auto;
+            padding: 30px;
+            border: 1px solid var(--electric-blue);
+            width: 80%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.3);
+            animation: slideIn 0.3s;
+            position: relative;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--electric-blue);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .close-button:hover {
+            color: var(--electric-blue-hover);
+            transform: scale(1.1);
+        }
+        
+        .modal-movie-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--electric-blue);
+            font-family: 'Montserrat', sans-serif;
+            border-bottom: 1px solid var(--electric-blue);
+            padding-bottom: 10px;
+        }
+        
+        .modal-user-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .modal-rating {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-comment {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .reviews-container {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .modal-content {
+                width: 90%;
+                margin: 15% auto;
+                padding: 20px;
+            }
+            
+            .modal-movie-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .reviews-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .review-card {
+                height: 350px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
+                padding: 15px;
+            }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--electric-blue);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--electric-blue-hover);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MOVIE REVIEWS</h1>
+    </header>
+    
+    <!-- Search Bar -->
+    <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search by movie title..." onkeyup="searchMovies()">
+    </div>
+    
+    <div class="reviews-container" id="reviewsContainer">
+        {% for review in reviews %}
+        <div class="review-card" data-movie-title="{{ review.movie.title|lower }}">
+            <div class="card-header">
+                <div class="movie-title">{{ review.movie.title }}</div>
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span class="user-name">{{ review.user.name }}</span>
+                </div>
+            </div>
+            <div class="rating">
+                <span class="star">⭐</span> {{ review.rating }}/10
+            </div>
+            <div class="card-body">
+                <div class="comment">{{ review.comment }}</div>
+            </div>
+            <div class="card-footer">
+                <div class="date">{{ review.created_at|date:"M d, Y" }}</div>
+                <button class="view-more" onclick="openModal('{{ review.movie.title }}', '{{ review.user.name }}', '{{ review.rating }}', '{{ review.comment }}', '{{ review.created_at|date:"M d, Y" }}')">View More</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Modal for displaying full review -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 class="modal-movie-title" id="modalMovieTitle"></h2>
+            <div class="modal-user-info">
+                <div>By: <span id="modalUsername"></span></div>
+                <div id="modalDate"></div>
+            </div>
+            <div class="modal-rating">
+                Rating: <span class="star">⭐</span> <span id="modalRating"></span>/10
+            </div>
+            <div class="modal-comment" id="modalComment"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Modal functionality
+        const modal = document.getElementById("reviewModal");
+        
+        function openModal(movieTitle, username, rating, comment, date) {
+            document.getElementById("modalMovieTitle").textContent = movieTitle;
+            document.getElementById("modalUsername").textContent = username;
+            document.getElementById("modalRating").textContent = rating;
+            document.getElementById("modalComment").textContent = comment;
+            document.getElementById("modalDate").textContent = date;
+            
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+        }
+        
+        function closeModal() {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto"; // Re-enable scrolling
+        }
+        
+        // Close modal when clicking outside the modal content
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Handle escape key
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape" && modal.style.display === "block") {
+                closeModal();
+            }
+        });
+        
+        // Search functionality
+        function searchMovies() {
+            const searchInput = document.getElementById("searchBar").value.toLowerCase();
+            const reviewCards = document.querySelectorAll(".review-card");
+            const container = document.getElementById("reviewsContainer");
+            let resultsFound = false;
+            
+            // Remove existing "no results" message if it exists
+            const existingNoResults = document.querySelector(".no-results");
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            reviewCards.forEach(card => {
+                const movieTitle = card.getAttribute("data-movie-title");
+                
+                if (movieTitle.includes(searchInput)) {
+                    card.style.display = "flex";
+                    resultsFound = true;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+            
+            // Show a message if no results are found
+            if (!resultsFound && searchInput !== "") {
+                const noResultsElement = document.createElement("div");
+                noResultsElement.className = "no-results";
+                noResultsElement.innerHTML = `<i class="fas fa-film" style="color: var(--electric-blue); font-size: 3rem; margin-bottom: 20px;"></i>
+                                            <p>No reviews found for "${searchInput}"</p>`;
+                container.appendChild(noResultsElement);
+            }
+        }
+    </script>
+</body>
+</html>

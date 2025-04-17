@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Trending Movies</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-black: #121212;
+            --secondary-black: #1e1e1e;
+            --electric-blue: #00ffff;
+            --electric-blue-glow: #00ffff80;
+            --text-light: #f5f5f5;
+            --card-gradient: linear-gradient(145deg, #1e1e1e, #252525);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-black);
+            color: var(--text-light);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 255, 0.03) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--electric-blue);
+            position: relative;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--electric-blue);
+            box-shadow: 0 0 20px var(--electric-blue-glow);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--electric-blue);
+            text-shadow: 0 0 10px var(--electric-blue-glow);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--electric-blue);
+            box-shadow: 0 0 10px var(--electric-blue-glow);
+        }
+        
+        header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin: 40px 0 30px;
+            color: var(--electric-blue);
+            text-shadow: 0 0 5px var(--electric-blue-glow);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background-color: var(--electric-blue);
+            box-shadow: 0 0 8px var(--electric-blue-glow);
+        }
+        
+        /* Grid Layout for Movies */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .movie-card {
+            background: var(--card-gradient);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .movie-poster-container {
+            position: relative;
+            overflow: hidden;
+            height: 0;
+            padding-top: 150%; /* 2:3 aspect ratio */
+        }
+        
+        .movie-poster {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .movie-card:hover .movie-poster {
+            transform: scale(1.05);
+        }
+        
+        .rating-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--electric-blue);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 0 10px var(--electric-blue-glow);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+        
+        .genre-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--text-light);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+        
+        .movie-info {
+            padding: 15px;
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .movie-info::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--electric-blue), transparent);
+        }
+        
+        .movie-title {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            min-height: 2.9rem;
+        }
+        
+        .movie-meta {
+            font-size: 0.85rem;
+            color: #b8b8b8;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .duration-language {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #b8b8b8;
+            margin-bottom: 10px;
+        }
+        
+        .movie-desc {
+            font-size: 0.9rem;
+            color: #d0d0d0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .movie-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background-color: var(--electric-blue);
+            color: var(--primary-black);
+        }
+        
+        .btn-primary:hover {
+            background-color: #00cccc;
+            box-shadow: 0 0 15px var(--electric-blue-glow);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--electric-blue);
+            color: var(--electric-blue);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* Review Grid Layout */
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .review-card {
+            background: var(--card-gradient);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .review-movie {
+            color: var(--electric-blue);
+            font-weight: 600;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 10px;
+        }
+        
+        .review-rating {
+            color: var(--electric-blue);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .review-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        
+        .review-content.expanded {
+            -webkit-line-clamp: unset;
+            max-height: none;
+        }
+        
+        .read-more {
+            color: var(--electric-blue);
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: right;
+            display: block;
+            margin-top: 5px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .read-more:hover {
+            text-shadow: 0 0 5px var(--electric-blue-glow);
+        }
+        
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 10px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--electric-blue);
+            color: var(--primary-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        
+        .filter-label {
+            font-size: 1rem;
+            color: var(--electric-blue);
+        }
+        
+        .filter-select {
+            background-color: var(--secondary-black);
+            color: var(--text-light);
+            border: 1px solid var(--electric-blue);
+            padding: 8px 15px;
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-select:focus {
+            box-shadow: 0 0 10px var(--electric-blue-glow);
+        }
+        
+        .filter-select option {
+            background-color: var(--secondary-black);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            background: var(--card-gradient);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            margin: 20px 0;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--electric-blue);
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive Design */
+        @media screen and (max-width: 992px) {
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+            
+            .review-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-group {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .filter-label {
+                min-width: 80px;
+            }
+            
+            .filter-select {
+                flex-grow: 1;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .movie-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .movie-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Trending Movies</h1>
+            <p>Discover the most popular and acclaimed movies</p>
+        </header>
+        
+        <h2 class="section-title">Featured Movies</h2>
+        
+        <div class="movie-grid" id="movie-grid">
+            {% for movie in trending_movies %}
+                <div class="movie-card" data-movie-id="{{ movie.id }}" data-genre="{{ movie.genre|lower }}" data-language="{{ movie.language|lower }}">
+                    <div class="movie-poster-container">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="movie-poster">
+                        {% else %}
+                            <img src="/api/placeholder/250/375" alt="Movie poster placeholder" class="movie-poster">
+                        {% endif %}
+                        
+                        <div class="rating-badge" id="rating-{{ movie.id }}">
+                            <i class="fas fa-star" style="color: gold;"></i>
+                            <span class="avg-rating">{{ movie.avg_rating|default:"N/A" }}</span>
+                        </div>
+                        
+                        <div class="genre-badge">
+                            {{ movie.genre }}
+                        </div>
+                    </div>
+                    
+                    <div class="movie-info">
+                        <h3 class="movie-title">{{ movie.title }}</h3>
+                        <div class="movie-meta">
+                            <span><i class="fas fa-film"></i> {{ movie.director }}</span>
+                            <span><i class="far fa-calendar-alt"></i> {{ movie.release_date|date:"Y" }}</span>
+                        </div>
+                        <div class="duration-language">
+                            <span><i class="far fa-clock"></i> {{ movie.duration }}</span>
+                            <span><i class="fas fa-language"></i> {{ movie.language }}</span>
+                        </div>
+                        <p class="movie-desc">{{ movie.description }}</p>
+                        <div class="movie-actions">
+                            <a href="{{ movie.trailer_link }}" target="_blank" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Trailer
+                            </a>
+                            <a href="/login/" class="btn btn-outline">
+                                <i class="fas fa-info-circle"></i> Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="fas fa-film"></i>
+                    <p>No movies available at the moment. Check back soon!</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <h2 class="section-title">Recent Reviews</h2>
+        
+        <div class="review-grid">
+            {% for review in trending_reviews %}
+                <div class="review-card" data-movie-id="{{ review.movie.id }}">
+                    <div class="review-header">
+                        <span class="review-movie">{{ review.movie.title }}</span>
+                        <div class="review-rating">
+                            ⭐ {{ review.rating }}/10
+                        </div>
+                    </div>
+                    <div class="review-content" id="review-content-{{ review.id }}">
+                        {{ review.comment }}
+                    </div>
+                    {% if review.comment|length > 200 %}
+                        <a href="javascript:void(0)" class="read-more" data-review-id="{{ review.id }}">Read More</a>
+                    {% endif %}
+                    <div class="review-footer">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                {{ review.user.name|first|upper }}
+                            </div>
+                            <span>{{ review.user.name }}</span>
+                        </div>
+                        <span>{{ review.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="far fa-comment-dots"></i>
+                    <p>No reviews yet. Be the first to share your thoughts!</p>
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login to Review
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculate and display average ratings
+            {% for movie in trending_movies %}
+                const movieId{{ movie.id }} = "{{ movie.id }}";
+                const reviews{{ movie.id }} = [
+                    {% for review in movie.review_set.all %}
+                        { rating: {{ review.rating }} }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ];
+                
+                if (reviews{{ movie.id }}.length > 0) {
+                    const sum{{ movie.id }} = reviews{{ movie.id }}.reduce((total, review) => total + review.rating, 0);
+                    const avg{{ movie.id }} = (sum{{ movie.id }} / reviews{{ movie.id }}.length).toFixed(1);
+                    const ratingElement{{ movie.id }} = document.querySelector('#rating-{{ movie.id }} .avg-rating');
+                    if (ratingElement{{ movie.id }}) {
+                        ratingElement{{ movie.id }}.textContent = avg{{ movie.id }};
+                    }
+                }
+            {% endfor %}
+            
+            // Read more functionality for reviews
+            const readMoreLinks = document.querySelectorAll('.read-more');
+            readMoreLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const reviewId = this.getAttribute('data-review-id');
+                    const content = document.getElementById('review-content-' + reviewId);
+                    content.classList.toggle('expanded');
+                    this.textContent = content.classList.contains('expanded') ? 'Show Less' : 'Read More';
+                });
+            });
+            
+            // Filter functionality
+            const genreFilter = document.getElementById('genre-filter');
+            const languageFilter = document.getElementById('language-filter');
+            const sortFilter = document.getElementById('sort-filter');
+            const movieGrid = document.getElementById('movie-grid');
+            
+            function applyFilters() {
+                const selectedGenre = genreFilter.value;
+                const selectedLanguage = languageFilter.value;
+                const selectedSort = sortFilter.value;
+                
+                // Get all movie cards
+                const movieCards = Array.from(document.querySelectorAll('.movie-card'));
+                
+                // Filter movies based on criteria
+                movieCards.forEach(card => {
+                    const cardGenre = card.getAttribute('data-genre');
+                    const cardLanguage = card.getAttribute('data-language');
+                    
+                    const genreMatch = selectedGenre === 'all' || cardGenre === selectedGenre;
+                    const languageMatch = selectedLanguage === 'all' || cardLanguage === selectedLanguage;
+                    
+                    if (genreMatch && languageMatch) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Sort movies
+                const visibleCards = movieCards.filter(card => card.style.display !== 'none');
+                
+                if (selectedSort === 'rating') {
+                    visibleCards.sort((a, b) => {
+                        const ratingA = parseFloat(a.querySelector('.avg-rating').textContent) || 0;
+                        const ratingB = parseFloat(b.querySelector('.avg-rating').textContent) || 0;
+                        return ratingB - ratingA;
+                    });
+                } else if (selectedSort === 'newest') {
+                    visibleCards.sort((a, b) => {
+                        const yearA = parseInt(a.querySelector('.movie-meta span:last-child').textContent) || 0;
+                        const yearB = parseInt(b.querySelector('.movie-meta span:last-child').textContent) || 0;
+                        return yearB - yearA;
+                    });
+                } else if (selectedSort === 'oldest') {
+                    visibleCards.sort((a, b) => {
+                        const yearA = parseInt(a.querySelector('.movie-meta span:last-child').textContent) || 0;
+                        const yearB = parseInt(b.querySelector('.movie-meta span:last-child').textContent) || 0;
+                        return yearA - yearB;
+                    });
+                }
+                
+                // Re-append sorted cards to grid
+                visibleCards.forEach(card => {
+                    movieGrid.appendChild(card);
+                });
+                
+                // Show empty state if no movies are visible
+                const visibleCount = visibleCards.length;
+                let emptyState = document.querySelector('#movie-grid .empty-state');
+                
+                if (visibleCount === 0) {
+                    if (!emptyState) {
+                        emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state';
+                        emptyState.style.gridColumn = '1 / -1';
+                        emptyState.innerHTML = `
+                            <i class="fas fa-search"></i>
+                            <p>No movies match your filters. Try different criteria!</p>
+                        `;
+                        movieGrid.appendChild(emptyState);
+                    }
+                } else if (emptyState) {
+                    emptyState.remove();
+                }
+            }
+            
+            // Add event listeners to filters
+            genreFilter.addEventListener('change', applyFilters);
+            languageFilter.addEventListener('change', applyFilters);
+            sortFilter.addEventListener('change', applyFilters);
+            
+            // Initialize filters
+            applyFilters();
+        });
+    </script>
+</body>
+</html>

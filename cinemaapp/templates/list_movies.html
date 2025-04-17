@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --electric-blue: #00FFFF;
+            --dark-blue: #0066CC;
+            --neon-blue: #0ff;
+            --black: #121212;
+            --card-bg: #1a1a1a;
+            --dark-gray: #212121;
+            --medium-gray: #2d2d2d;
+            --light-gray: #aaa;
+            --card-gradient: linear-gradient(145deg, #1c1c1c, #151515);
+            --blue-glow: 0 0 15px rgba(0, 255, 255, 0.5);
+            --blue-glow-intense: 0 0 25px rgba(0, 255, 255, 0.8);
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #000000, #0a0a14);
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+        
+        .navbar {
+            background-color: var(--black);
+            border-bottom: 2px solid var(--electric-blue);
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1 span {
+            color: var(--electric-blue);
+            text-shadow: var(--blue-glow);
+        }
+        
+        .header h1:after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 3px;
+            background: var(--electric-blue);
+            bottom: -10px;
+            left: 20%;
+            box-shadow: var(--blue-glow);
+        }
+        
+        .header p {
+            color: var(--light-gray);
+            max-width: 700px;
+            margin: 20px auto 0;
+        }
+        
+        .card {
+            background: var(--card-gradient);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 25px;
+            height: 100%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            cursor: pointer; /* Add cursor pointer to indicate clickable */
+        }
+        
+        .card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: var(--electric-blue);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), var(--blue-glow);
+        }
+        
+        .card-img-top {
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            filter: brightness(0.8);
+        }
+        
+        .card:hover .card-img-top {
+            filter: brightness(1);
+            transform: scale(1.05);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .card-title {
+            color: var(--electric-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .card:hover .card-title {
+            text-shadow: var(--blue-glow);
+        }
+        
+        .btn {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--dark-blue), #0088cc);
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #0088cc, var(--electric-blue));
+            color: var(--black);
+            box-shadow: 0 6px 15px rgba(0, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #990000, #cc0000);
+            border: none;
+            box-shadow: 0 4px 10px rgba(153, 0, 0, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #cc0000, #ff0000);
+            box-shadow: 0 6px 15px rgba(255, 0, 0, 0.4);
+            transform: translateY(-2px) scale(1.05);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #996600, #cc8800);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 10px rgba(153, 102, 0, 0.3);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(45deg, #cc8800, #ffaa00);
+            color: var(--black);
+            box-shadow: 0 6px 15px rgba(255, 204, 0, 0.4);
+            transform: translateY(-2px) scale(1.05);
+        }
+        
+        .btn-add {
+            background: linear-gradient(45deg, var(--dark-blue), var(--electric-blue));
+            border: none;
+            color: var(--black);
+            font-weight: 700;
+            padding: 12px 30px;
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .btn-add:hover {
+            background: linear-gradient(45deg, var(--electric-blue), var(--dark-blue));
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: var(--blue-glow-intense);
+        }
+        
+        .search-container {
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .search-container:hover {
+            border-color: var(--electric-blue);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .form-control, .form-select {
+            background-color: rgba(20, 20, 20, 0.7);
+            border: 1px solid #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(30, 30, 30, 0.9);
+            border-color: var(--electric-blue);
+            box-shadow: var(--blue-glow);
+            color: white;
+        }
+        
+        .input-group-text {
+            background: linear-gradient(45deg, var(--dark-blue), #004c99);
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        
+        .movie-info {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .movie-info strong {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .badge {
+            background: linear-gradient(45deg, #004080, #0066cc);
+            color: white;
+            margin-right: 5px;
+            padding: 6px 12px;
+            font-weight: 500;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0, 102, 204, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: linear-gradient(45deg, #0066cc, var(--electric-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 255, 255, 0.4);
+        }
+        
+        .page-title {
+            color: var(--electric-blue);
+            text-shadow: var(--blue-glow);
+            margin-bottom: 30px;
+        }
+        
+        .action-buttons {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+        }
+        
+        .card-text-container {
+            margin-bottom: 60px;
+        }
+        
+        .truncate-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+        
+        .movie-icon {
+            color: var(--electric-blue);
+            font-size: 1.5rem;
+            margin-right: 10px;
+            text-shadow: var(--blue-glow);
+        }
+        
+        .no-movies-container {
+            background: linear-gradient(45deg, rgba(0, 30, 60, 0.7), rgba(0, 10, 30, 0.7));
+            border: 1px solid var(--electric-blue);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: var(--blue-glow);
+        }
+        
+        .no-movies-container h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--electric-blue);
+            margin-bottom: 15px;
+            text-shadow: var(--blue-glow);
+        }
+        
+        .no-movies-container i {
+            font-size: 4rem;
+            color: var(--electric-blue);
+            margin-bottom: 20px;
+            opacity: 0.7;
+            text-shadow: var(--blue-glow);
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            background: var(--card-gradient);
+            border: 2px solid var(--electric-blue);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 1.5rem;
+        }
+        
+        .modal-title {
+            color: var(--electric-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            text-shadow: var(--blue-glow);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 1.5rem;
+        }
+        
+        .btn-close {
+            color: var(--electric-blue);
+            opacity: 1;
+            text-shadow: none;
+            box-shadow: none;
+            background: transparent;
+            font-size: 1.5rem;
+        }
+        
+        .btn-close:hover {
+            color: white;
+            opacity: 1;
+        }
+        
+        .modal-backdrop.show {
+            opacity: 0.8;
+        }
+        
+        .movie-detail-img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .movie-detail-info {
+            padding: 0 1rem;
+        }
+        
+        .movie-detail-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .movie-detail-section {
+            margin-bottom: 15px;
+        }
+        
+        .movie-detail-label {
+            color: var(--electric-blue);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .movie-detail-badges {
+            margin: 15px 0;
+        }
+        
+        .movie-detail-description {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+            text-align: justify;
+        }
+        
+        .modal-action-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            min-width: 140px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .movie-card {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .movie-card:nth-child(3n+1) { animation-delay: 0.1s; }
+        .movie-card:nth-child(3n+2) { animation-delay: 0.2s; }
+        .movie-card:nth-child(3n+3) { animation-delay: 0.3s; }
+        
+        /* Modal animation */
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .modal.show .modal-dialog {
+            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        /* Glowing light effect */
+        .glow-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .action-buttons .d-flex {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .card-title {
+                font-size: 1.3rem;
+            }
+            
+            .modal-action-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient glow effect -->
+    <div class="glow-effect"></div>
+
+    <div class="container py-4">
+        <div class="header">
+            <h1><span>MO</span>VIEW</h1>
+            <p>Discover and manage your movie collection with our intuitive interface</p>
+        </div>
+        
+        <div class="d-flex justify-content-center mb-4">
+            <a href="/add_movie/" class="btn btn-add">
+                <i class="fas fa-plus-circle me-2"></i> Add New Movie
+            </a>
+        </div>
+        
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search movies by title...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-globe"></i>
+                        </span>
+                        <select class="form-select" id="languageFilter">
+                            <option value="">All Languages</option>
+                            {% regroup movies by language as language_list %}
+                            {% for language_group in language_list %}
+                                <option value="{{ language_group.grouper }}">{{ language_group.grouper }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" id="movieList">
+            {% for movie in movies %}
+            <div class="col-lg-4 col-md-6 mb-4 movie-card" data-title="{{ movie.title|lower }}" data-language="{{ movie.language|lower }}">
+                <div class="card h-100" onclick="showMovieDetails({{ movie.id }}, '{{ movie.title }}', '{{ movie.director }}', '{{ movie.release_date }}', '{{ movie.duration }}', '{{ movie.language }}', '{{ movie.genre }}', '{{ movie.description|escapejs }}', '{{ movie.poster.url }}', '{{ movie.trailer_link }}')">
+                    <div class="position-relative overflow-hidden">
+                        <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }} Poster">
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ movie.title }}</h5>
+                        <div class="card-text-container">
+                            <p class="movie-info">
+                                <strong><i class="fas fa-film me-2" style="color: var(--electric-blue);"></i>Director:</strong> {{ movie.director }}<br>
+                                <strong><i class="fas fa-calendar-alt me-2" style="color: var(--electric-blue);"></i>Release:</strong> {{ movie.release_date }}<br>
+                                <strong><i class="fas fa-clock me-2" style="color: var(--electric-blue);"></i>Duration:</strong> {{ movie.duration }}<br>
+                                <strong><i class="fas fa-language me-2" style="color: var(--electric-blue);"></i>Language:</strong> {{ movie.language }}
+                            </p>
+                            <p class="card-text mb-3">
+                                <span class="badge">{{ movie.genre }}</span>
+                            </p>
+                            <!-- <p class="card-text truncate-text">{{ movie.description }}</p> -->
+                        </div>
+                        <!-- <div class="action-buttons">
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ movie.trailer_link }}" target="_blank" class="btn btn-primary" onclick="event.stopPropagation();">
+                                    <i class="fas fa-play-circle me-1"></i> Trailer
+                                </a>
+                                <div>
+                                    <a href="/edit_movie/{{ movie.id }}/" class="btn btn-warning" onclick="event.stopPropagation();">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+                                    <a href="/delete_movie/{{ movie.id }}/" class="btn btn-danger" onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this movie?')">
+                                        <i class="fas fa-trash-alt me-1"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="no-movies-container">
+                    <i class="fas fa-film"></i>
+                    <h4>No Movies Found</h4>
+                    <p>There are no movies in the database yet. Click "Add New Movie" to add your first movie.</p>
+                    <a href="/add_movie/" class="btn btn-add mt-3">
+                        <i class="fas fa-plus-circle me-2"></i> Add Your First Movie
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Movie Details Modal -->
+    <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="movieModalLabel">Movie Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-5 mb-4 mb-md-0">
+                            <img id="modalMoviePoster" src="" alt="Movie Poster" class="movie-detail-img">
+                        </div>
+                        <div class="col-md-7 movie-detail-info">
+                            <h3 id="modalMovieTitle" class="movie-detail-title"></h3>
+                            
+                            <div class="movie-detail-section">
+                                <p class="movie-detail-label"><i class="fas fa-film me-2"></i>Director</p>
+                                <p id="modalMovieDirector"></p>
+                            </div>
+                            
+                            <div class="movie-detail-section">
+                                <p class="movie-detail-label"><i class="fas fa-calendar-alt me-2"></i>Release Date</p>
+                                <p id="modalMovieReleaseDate"></p>
+                            </div>
+                            
+                            <div class="movie-detail-section">
+                                <p class="movie-detail-label"><i class="fas fa-clock me-2"></i>Duration</p>
+                                <p id="modalMovieDuration"></p>
+                            </div>
+                            
+                            <div class="movie-detail-section">
+                                <p class="movie-detail-label"><i class="fas fa-language me-2"></i>Language</p>
+                                <p id="modalMovieLanguage"></p>
+                            </div>
+                            
+                            <div class="movie-detail-badges">
+                                <span id="modalMovieGenre" class="badge"></span>
+                            </div>
+                            
+                            <div class="movie-detail-section">
+                                <p class="movie-detail-label"><i class="fas fa-info-circle me-2"></i>Description</p>
+                                <p id="modalMovieDescription" class="movie-detail-description"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-action-buttons">
+                        <a id="modalTrailerLink" href="#" target="_blank" class="btn btn-primary modal-btn">
+                            <i class="fas fa-play-circle me-1"></i> Watch Trailer
+                        </a>
+                        <a id="modalEditLink" href="#" class="btn btn-warning modal-btn">
+                            <i class="fas fa-edit me-1"></i> Edit Movie
+                        </a>
+                        <a id="modalDeleteLink" href="#" class="btn btn-danger modal-btn" onclick="return confirm('Are you sure you want to delete this movie?')">
+                            <i class="fas fa-trash-alt me-1"></i> Delete Movie
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', filterMovies);
+        document.getElementById('languageFilter').addEventListener('change', filterMovies);
+        
+        function filterMovies() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const languageFilter = document.getElementById('languageFilter').value.toLowerCase();
+            const movieCards = document.querySelectorAll('.movie-card');
+            
+            movieCards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                const language = card.getAttribute('data-language');
+                
+                const matchesSearch = title.includes(searchText);
+                const matchesLanguage = languageFilter === '' || language === languageFilter;
+                
+                if (matchesSearch && matchesLanguage) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Show movie details in modal
+        function showMovieDetails(id, title, director, releaseDate, duration, language, genre, description, posterUrl, trailerLink) {
+            // Set modal content
+            document.getElementById('modalMovieTitle').textContent = title;
+            document.getElementById('modalMovieDirector').textContent = director;
+            document.getElementById('modalMovieReleaseDate').textContent = releaseDate;
+            document.getElementById('modalMovieDuration').textContent = duration;
+            document.getElementById('modalMovieLanguage').textContent = language;
+            document.getElementById('modalMovieGenre').textContent = genre;
+            document.getElementById('modalMovieDescription').textContent = description;
+            document.getElementById('modalMoviePoster').src = posterUrl;
+            
+            // Set action links
+            document.getElementById('modalTrailerLink').href = trailerLink;
+            document.getElementById('modalEditLink').href = `/edit_movie/${id}/`;
+            document.getElementById('modalDeleteLink').href = `/delete_movie/${id}/`;
+            
+            // Show the modal
+            const movieModal = new bootstrap.Modal(document.getElementById('movieModal'));
+            movieModal.show();
+        }
+        
+        // Extra visual effect: follow mouse glow
+        document.addEventListener('mousemove', function(e) {
+            const glowEffect = document.querySelector('.glow-effect');
+            glowEffect.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, rgba(0, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%)`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Review</title>
+    <style>
+        :root {
+            --electric-blue: #00FFFF;
+            --dark-blue: #001833;
+            --glow-color: #00BBFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #000, #00112b);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: rgba(0, 10, 25, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 20px var(--electric-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--electric-blue), transparent);
+            animation: scan 3s infinite linear;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .movie-details {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(0, 15, 30, 0.5);
+            border-left: 3px solid var(--electric-blue);
+        }
+        
+        .movie-details h2 {
+            color: var(--electric-blue);
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            font-size: 24px;
+        }
+        
+        .movie-details p {
+            color: #ccc;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--electric-blue);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            font-size: 28px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--electric-blue), transparent);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--electric-blue);
+            font-weight: 500;
+        }
+        
+        .rating-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+        }
+        
+        .stars input {
+            display: none;
+        }
+        
+        .stars label {
+            cursor: pointer;
+            width: 30px;
+            font-size: 30px;
+            color: #444;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin: 0 2px;
+        }
+        
+        .stars label:before {
+            content: '★';
+        }
+        
+        .stars input:checked ~ label {
+            color: var(--electric-blue);
+            text-shadow: 0 0 15px var(--electric-blue);
+        }
+        
+        .stars label:hover,
+        .stars label:hover ~ label {
+            color: var(--glow-color);
+            transform: translateY(-10px) scale(1.2);
+        }
+        
+        .rating-value {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: rgba(0, 15, 30, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--electric-blue);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--dark-blue);
+            background-color: rgba(0, 10, 25, 0.5);
+            color: #fff;
+            resize: vertical;
+            min-height: 150px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--electric-blue);
+            box-shadow: 0 0 10px var(--electric-blue);
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        
+        .btn-back {
+            background-color: transparent;
+            color: var(--electric-blue);
+            border: 1px solid var(--electric-blue);
+        }
+        
+        .btn-back:hover {
+            background-color: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(45deg, #004, var(--electric-blue));
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(45deg, var(--electric-blue), #004);
+            box-shadow: 0 0 15px var(--electric-blue);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .stars label {
+                font-size: 26px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .movie-details h2 {
+                font-size: 20px;
+            }
+            
+            .stars label {
+                font-size: 22px;
+                width: 25px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Your Review</h1>
+        
+        <div class="movie-details">
+            <h2>{{ movie.title }}</h2>
+            <p><strong>Director:</strong> {{ movie.director }}</p>
+            <p><strong>Genre:</strong> {{ movie.genre }}</p>
+            <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="rating">Your Rating</label>
+                <div class="rating-container">
+                    <div class="stars">
+                        <input type="radio" id="star10" name="rating" value="10">
+                        <label for="star10" title="10 - Masterpiece"></label>
+                        <input type="radio" id="star9" name="rating" value="9">
+                        <label for="star9" title="9 - Excellent"></label>
+                        <input type="radio" id="star8" name="rating" value="8">
+                        <label for="star8" title="8 - Great"></label>
+                        <input type="radio" id="star7" name="rating" value="7">
+                        <label for="star7" title="7 - Very Good"></label>
+                        <input type="radio" id="star6" name="rating" value="6">
+                        <label for="star6" title="6 - Good"></label>
+                        <input type="radio" id="star5" name="rating" value="5">
+                        <label for="star5" title="5 - Average"></label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" title="4 - Below Average"></label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3" title="3 - Poor"></label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" title="2 - Terrible"></label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" title="1 - Unwatchable"></label>
+                    </div>
+                    <div class="rating-value"><span id="rating-display">0</span>/10</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment">Your Review</label>
+                <textarea id="comment" name="comment" placeholder="Share your thoughts about this movie..." required></textarea>
+            </div>
+            
+            <div class="buttons">
+                <button type="button" class="btn btn-back" onclick="window.location.href='/user_list_movies/'">Back</button>
+                <button type="submit" class="btn btn-submit">Submit Review</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Rating selection with sliding animation
+        const ratingInputs = document.querySelectorAll('input[name="rating"]');
+        const ratingDisplay = document.getElementById('rating-display');
+        
+        ratingInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                // Update the display
+                ratingDisplay.textContent = this.value;
+                
+                // Reset all stars
+                document.querySelectorAll('.stars label').forEach(star => {
+                    star.style.transform = 'translateY(0) scale(1)';
+                });
+                
+                // Apply sliding animation to selected star and stars to the right
+                const selectedStar = document.querySelector(`label[for="${this.id}"]`);
+                selectedStar.style.transform = 'translateY(-10px) scale(1.2)';
+                
+                // Add transition for smooth animation
+                document.querySelectorAll('.stars label').forEach(star => {
+                    star.style.transition = 'transform 0.3s ease, color 0.3s ease';
+                });
+                
+                // Return to normal position with slight delay
+                setTimeout(() => {
+                    selectedStar.style.transform = 'translateY(-5px) scale(1.1)';
+                }, 300);
+            });
+        });
+        
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const rating = document.querySelector('input[name="rating"]:checked');
+            if (!rating) {
+                e.preventDefault();
+                alert("Please select a rating before submitting your review.");
+            }
+        });
+    </script>
+</body>
+</html>

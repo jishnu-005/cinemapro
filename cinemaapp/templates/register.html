@@ -1,0 +1,658 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Register</title>
+    <style>
+        /* Updated color theme - Black and Electric Blue */
+        :root {
+            --primary: #00BFFF;         /* Electric Blue */
+            --primary-dark: #0080FF;    /* Darker Electric Blue */
+            --primary-light: #40C4FF;   /* Lighter Electric Blue */
+            --secondary: #0099CC;       /* Secondary Blue */
+            --secondary-dark: #0077B5;  /* Darker Secondary Blue */
+            --dark: #000000;            /* Black */
+            --darker: #0A0A0A;          /* Slightly lighter black */
+            --light: #e2e8f0;           /* Light gray (unchanged) */
+            --gray: #6b7280;            /* Gray (unchanged) */
+            --light-gray: #4b5563;      /* Light gray (unchanged) */
+            --card-bg: rgba(10, 10, 10, 0.8);  /* Darker card background */
+            --glass-border: rgba(0, 191, 255, 0.2); /* Electric blue border */
+            --glass-highlight: rgba(0, 191, 255, 0.1); /* Electric blue highlight */
+            --error: #ff4757;           /* Error red color */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(at 100% 0%, rgba(0, 191, 255, 0.3) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(0, 153, 204, 0.2) 0px, transparent 50%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            padding-top: 70px; /* Add space for fixed navbar */
+        }
+        
+        /* Navbar styles */
+        .login-nav {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        /* Update the nav container to justify content between */
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 0 0; /* Remove left padding, keep right padding */
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+        }
+
+        /* Update the back button */
+        .nav-back-btn {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem 0.5rem 2rem; /* Add left padding here */
+            margin-left: -1rem; /* Pull it slightly to the left */
+        }
+
+        .nav-back-btn:hover {
+            color: var(--primary-light);
+            transform: translateX(-3px);
+        }
+
+        /* Back button */
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: var(--light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .back-btn:hover {
+            color: var(--primary-light);
+            transform: translateX(-3px);
+        }
+
+        /* Register container */
+        .login-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 0%,
+                rgba(0, 191, 255, 0.1) 50%,
+                transparent 100%
+            );
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Form styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.3);
+        }
+
+        .input-group input.error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: var(--gray);
+        }
+
+        /* Error message */
+        .error-message {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            margin-left: 0.5rem;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Password strength meter */
+        .password-strength {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .strength-meter {
+            height: 5px;
+            width: 100%;
+            background: rgba(107, 114, 128, 0.2);
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            color: var(--gray);
+        }
+
+        /* Number input - remove arrows */
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* Password toggle */
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .toggle-password i {
+            font-size: 1.2rem;
+        }
+
+        /* Register button */
+        .login-btn {
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+            color: white;
+            font-weight: 600;
+            padding: 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 191, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary-dark));
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(0, 191, 255, 0.4);
+        }
+
+        .login-btn:hover::before {
+            width: 100%;
+        }
+
+        .login-btn:disabled {
+            background: linear-gradient(45deg, #6b7280, #9ca3af);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Login link */
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .back-btn {
+                top: 1.5rem;
+                left: 1.5rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="login-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-back-btn">
+                <i class="fas fa-arrow-left"></i> 
+            </a>
+        </div>
+    </nav>
+    
+    <div class="login-container">
+        <h2>Register</h2>
+        <form method="post" id="registerForm" novalidate>
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                <div class="error-message" id="nameError"></div>
+            </div>
+            <div class="input-group">
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="phone" name="phone" placeholder="Enter your phone number" required>
+                <div class="error-message" id="phoneError"></div>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <button type="button" class="toggle-password" onclick="togglePassword()">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="error-message" id="passwordError"></div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-meter">
+                        <div class="strength-meter-fill" id="strengthMeter"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText">Password strength</div>
+                </div>
+            </div>
+            <button type="submit" class="login-btn" id="registerBtn">Register</button>
+            
+            <div class="login-link">
+                Already have an account? <a href="/login/">Sign In</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById("password");
+            const eyeIcon = document.querySelector(".toggle-password i");
+            
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        // Get all form elements
+        const registerForm = document.getElementById('registerForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const passwordInput = document.getElementById('password');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        // Error message elements
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const phoneError = document.getElementById('phoneError');
+        const passwordError = document.getElementById('passwordError');
+        
+        // Password strength elements
+        const passwordStrength = document.getElementById('passwordStrength');
+        const strengthMeter = document.getElementById('strengthMeter');
+        const strengthText = document.getElementById('strengthText');
+
+        // Email validation
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        // Password validation
+        function validatePassword(password) {
+            // Check if password is at least 8 characters
+            if (password.length < 8) {
+                return {
+                    valid: false,
+                    message: 'Password must be at least 8 characters long',
+                    strength: 0
+                };
+            }
+            
+            // Calculate password strength
+            let strength = 0;
+            
+            // Contains lowercase letters
+            if (password.match(/[a-z]+/)) {
+                strength += 1;
+            }
+            
+            // Contains uppercase letters
+            if (password.match(/[A-Z]+/)) {
+                strength += 1;
+            }
+            
+            // Contains numbers
+            if (password.match(/[0-9]+/)) {
+                strength += 1;
+            }
+            
+            // Contains special characters
+            if (password.match(/[^a-zA-Z0-9]+/)) {
+                strength += 1;
+            }
+            
+            // Return result based on strength
+            if (strength === 1) {
+                return {
+                    valid: true,
+                    message: '',
+                    strength: 25,
+                    text: 'Weak'
+                };
+            } else if (strength === 2) {
+                return {
+                    valid: true,
+                    message: '',
+                    strength: 50,
+                    text: 'Medium'
+                };
+            } else if (strength === 3) {
+                return {
+                    valid: true,
+                    message: '',
+                    strength: 75,
+                    text: 'Strong'
+                };
+            } else if (strength === 4) {
+                return {
+                    valid: true,
+                    message: '',
+                    strength: 100,
+                    text: 'Very Strong'
+                };
+            }
+        }
+
+        // Phone validation
+        function validatePhone(phone) {
+            // Simple validation to check if phone has at least 10 digits
+            return phone.length >= 10;
+        }
+
+        // Show error message
+        function showError(input, errorElement, message) {
+            input.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Hide error message
+        function hideError(input, errorElement) {
+            input.classList.remove('error');
+            errorElement.textContent = '';
+            errorElement.style.display = 'none';
+        }
+
+        // Update password strength indicator
+        function updatePasswordStrength(result) {
+            passwordStrength.style.display = 'block';
+            
+            // Update meter width
+            strengthMeter.style.width = `${result.strength}%`;
+            
+            // Update color based on strength
+            if (result.strength <= 25) {
+                strengthMeter.style.background = '#ff4757'; // Red for weak
+                strengthText.textContent = 'Weak password';
+                strengthText.style.color = '#ff4757';
+            } else if (result.strength <= 50) {
+                strengthMeter.style.background = '#ffa502'; // Orange for medium
+                strengthText.textContent = 'Medium password';
+                strengthText.style.color = '#ffa502';
+            } else if (result.strength <= 75) {
+                strengthMeter.style.background = '#2ed573'; // Green for strong
+                strengthText.textContent = 'Strong password';
+                strengthText.style.color = '#2ed573';
+            } else {
+                strengthMeter.style.background = '#00BFFF'; // Blue for very strong
+                strengthText.textContent = 'Very strong password';
+                strengthText.style.color = '#00BFFF';
+            }
+        }
+
+        // Real-time validation for email
+        emailInput.addEventListener('input', () => {
+            if (emailInput.value.trim() === '') {
+                hideError(emailInput, emailError);
+                return;
+            }
+            
+            if (!validateEmail(emailInput.value)) {
+                showError(emailInput, emailError, 'Please enter a valid email address');
+            } else {
+                hideError(emailInput, emailError);
+            }
+        });
+
+        // Real-time validation for password with strength indicator
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value.trim() === '') {
+                hideError(passwordInput, passwordError);
+                passwordStrength.style.display = 'none';
+                return;
+            }
+            
+            const result = validatePassword(passwordInput.value);
+            
+            if (!result.valid) {
+                showError(passwordInput, passwordError, result.message);
+                passwordStrength.style.display = 'none';
+            } else {
+                hideError(passwordInput, passwordError);
+                updatePasswordStrength(result);
+            }
+        });
+
+        // Real-time validation for phone
+        phoneInput.addEventListener('input', () => {
+            if (phoneInput.value.trim() === '') {
+                hideError(phoneInput, phoneError);
+                return;
+            }
+            
+            if (!validatePhone(phoneInput.value)) {
+                showError(phoneInput, phoneError, 'Phone number must have at least 10 digits');
+            } else {
+                hideError(phoneInput, phoneError);
+            }
+        });
+
+        // Form submission validation
+        registerForm.addEventListener('submit', (e) => {
+            let isValid = true;
+            
+            // Name validation
+            if (nameInput.value.trim() === '') {
+                showError(nameInput, nameError, 'Name is required');
+                isValid = false;
+            } else {
+                hideError(nameInput, nameError);
+            }
+            
+            // Email validation
+            if (emailInput.value.trim() === '') {
+                showError(emailInput, emailError, 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(emailInput.value)) {
+                showError(emailInput, emailError, 'Please enter a valid email address');
+                isValid = false;
+            } else {
+                hideError(emailInput, emailError);
+            }
+            
+            // Phone validation
+            if (phoneInput.value.trim() === '') {
+                showError(phoneInput, phoneError, 'Phone number is required');
+                isValid = false;
+            } else if (!validatePhone(phoneInput.value)) {
+                showError(phoneInput, phoneError, 'Phone number must have at least 10 digits');
+                isValid = false;
+            } else {
+                hideError(phoneInput, phoneError);
+            }
+            
+            // Password validation
+            if (passwordInput.value.trim() === '') {
+                showError(passwordInput, passwordError, 'Password is required');
+                isValid = false;
+            } else {
+                const result = validatePassword(passwordInput.value);
+                if (!result.valid) {
+                    showError(passwordInput, passwordError, result.message);
+                    isValid = false;
+                } else {
+                    hideError(passwordInput, passwordError);
+                }
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
