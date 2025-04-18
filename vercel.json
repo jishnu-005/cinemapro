@@ -1,13 +1,18 @@
 {
-    "build": [{
-        "src": "cinemapro/wsgi.py",
-        "use" :"@vercel/python",
-        "config": { "maxLambdaSize": "256MB", "runtime": "python3.9" }
-    }],
-    "routes": [
+    "builds":[
         {
-            "src": "/(.*)",
-            "dest": "cinemapro/wsgi.py"
+            "src":"cinemapro/wsgi.py",
+            "use":"@vercel/python",
+            "config":{
+                "maxLambadaSize":"512mb",
+                "runtime":"python3.10"
+            }
+        }
+    ],
+    "routes":[
+        {
+            "src":"/(.*)",
+            "dest":"cinemapro/wsgi.py"
         }
     ]
 }
